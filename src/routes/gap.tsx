@@ -49,7 +49,7 @@ function GapPage() {
   const extract = () => {
     if (!aliases.data) return;
     const found = detectSkills(resume, aliases.data);
-    if (!found.size) return toast.info("No known skills were found in that text.");
+    if (!found.size) { toast.info("No known skills were found in that text."); return; }
     const add = async () => {
       const { getSkillsByIds } = await import("@/lib/skillsync/api");
       const skills = await getSkillsByIds([...found.keys()].slice(0, 150));
@@ -61,7 +61,7 @@ function GapPage() {
 
   const onFile = async (f?: File) => {
     if (!f) return;
-    if (!/\.(txt|md)$/i.test(f.name) && !f.type.startsWith("text/")) return toast.error("For now, upload a .txt resume or paste the text below. PDF parsing isn't supported yet.");
+    if (!/\.(txt|md)$/i.test(f.name) && !f.type.startsWith("text/")) { toast.error("Please upload a .txt resume or paste the text below — PDF reading isn't supported yet."); return; }
     setResume(await f.text());
   };
 

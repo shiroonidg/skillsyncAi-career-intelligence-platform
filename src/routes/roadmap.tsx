@@ -19,7 +19,7 @@ export const Route = createFileRoute("/roadmap")({
 });
 
 function why(i: GapItem, role: string, unlocks: string[]) {
-  const parts: string[] = [`Required by ${role} (ranked #${i.importanceRank} by importance)`];
+  const parts: string[] = [`required by ${role} (ranked #${i.importanceRank} by importance)`];
   parts.push(i.match === "partial" ? `partially covered through ${i.partialVia.map((s) => s.name).join(", ")}` : "missing from your current profile");
   if (i.evidenceFrequency > 0) parts.push(`seen in ${i.evidenceFrequency} ${i.evidenceSource ?? ""} postings for this role`);
   if (unlocks.length) parts.push(`a prerequisite for ${unlocks.join(", ")} in the skill graph`);

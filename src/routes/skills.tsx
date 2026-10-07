@@ -40,10 +40,11 @@ function SkillsPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Skill Intelligence" title="How skills connect to roles and each other" desc="Market frequency counts postings that mention a skill. Role links come from the requirement matrix; skill links from the curated skill graph and co-occurrence in postings." />
+      <PageHeader eyebrow="Skill Intelligence" title="Skill Intelligence" desc="Explore the skills shaping today's workforce." />
 
       <Panel className="mb-6">
-        <h3 className="mb-3 font-semibold">Skill → Skill relationships</h3>
+        <h3 className="mb-1 font-semibold">Skill Relationships</h3>
+        <p className="mb-4 text-sm text-muted-foreground">How capabilities build on one another. Select a skill to explore it.</p>
         {rels.isLoading ? <LoadingState /> : rels.error ? <ErrorState error={rels.error} /> : !rels.data?.length ? <EmptyState title="No relationships recorded" /> : (
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {rels.data.map((r) => (
@@ -63,7 +64,7 @@ function SkillsPage() {
           <div className="space-y-3">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input value={text} onChange={(e) => setText(e.target.value)} placeholder="Search 2,500+ skills…" className="pl-9" aria-label="Search skills" />
+              <Input value={text} onChange={(e) => setText(e.target.value)} placeholder="Search 2,500+ skills, e.g. Python, Tableau, Spark" className="h-11 pl-9" aria-label="Search skills" />
             </div>
             <div className="flex gap-2">
               <select aria-label="Category" value={category} onChange={(e) => setCategory(e.target.value)} className="h-9 flex-1 rounded-md border bg-background px-2 text-sm">
@@ -76,7 +77,7 @@ function SkillsPage() {
             </div>
           </div>
           <div className="mt-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{text || category || coreOnly ? "Results" : "Top skills"}</div>
-          {list.isLoading ? <LoadingState /> : list.error ? <ErrorState error={list.error} /> : !list.data?.length ? <EmptyState title="No skills match" /> : (
+          {list.isLoading ? <LoadingState /> : list.error ? <ErrorState error={list.error} /> : !list.data?.length ? <EmptyState title="No matching skills found" desc="Try another keyword or explore related capabilities." /> : (
             <ul className="mt-2 max-h-[560px] space-y-1 overflow-auto pr-1">
               {list.data.map((s) => (
                 <li key={s.id}>
@@ -92,7 +93,7 @@ function SkillsPage() {
             </ul>
           )}
         </Panel>
-        <div className="lg:col-span-3">{active ? <SkillDetail skill={active} /> : <EmptyState title="Select a skill" />}</div>
+        <div className="lg:col-span-3">{active ? <SkillDetail skill={active} /> : <EmptyState title="Select a skill" desc="Choose any skill from the list to see its roles and relationships." />}</div>
       </div>
     </>
   );
@@ -126,7 +127,7 @@ function SkillDetail({ skill }: { skill: Skill }) {
         </div>
       </Panel>
       <Panel>
-        <h3 className="mb-3 font-semibold">Skill → Role</h3>
+        <h3 className="mb-3 font-semibold">Associated Roles</h3>
         {reqs.isLoading ? <LoadingState /> : roleLinks.length === 0 ? <p className="text-sm text-muted-foreground">No role in the requirement matrix lists this skill.</p> : (
           <ul className="space-y-2">
             {roleLinks.map((r) => (
@@ -139,7 +140,7 @@ function SkillDetail({ skill }: { skill: Skill }) {
         )}
       </Panel>
       <Panel>
-        <h3 className="mb-3 font-semibold">Prerequisite relationships</h3>
+        <h3 className="mb-3 font-semibold">Prerequisites</h3>
         {needs.length === 0 && prereqOf.length === 0 ? <p className="text-sm text-muted-foreground">No curated relationships for this skill.</p> : (
           <div className="space-y-3 text-sm">
             {needs.length > 0 && <div className="flex flex-wrap items-center gap-1.5"><span className="text-muted-foreground">Builds on:</span>{needs.map((r) => <SkillBadge key={r.id} name={`${index.get(r.from_skill_id)?.name ?? "…"} (${r.relationship_type.replace(/_/g, " ")})`} />)}</div>}
@@ -148,7 +149,7 @@ function SkillDetail({ skill }: { skill: Skill }) {
         )}
       </Panel>
       <Panel>
-        <h3 className="mb-1 font-semibold">Related skills (co-occurrence)</h3>
+        <h3 className="mb-1 font-semibold">Co-occurring Skills</h3>
         <p className="mb-3 text-xs text-muted-foreground">Skills most often listed in the same postings{co.data ? ` (sample of ${co.data.sampled} postings)` : ""}.</p>
         {co.isLoading ? <LoadingState /> : co.error ? <ErrorState error={co.error} /> : !co.data?.items.length ? <p className="text-sm text-muted-foreground">No postings are linked to this skill.</p> : (
           <div className="flex flex-wrap gap-1.5">{co.data.items.map((i) => <SkillBadge key={i.skill.id} name={`${i.skill.name} · ${i.count}`} slug={i.skill.slug} />)}</div>

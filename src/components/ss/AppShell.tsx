@@ -9,8 +9,8 @@ const NAV = [
   { to: "/", label: "Dashboard", icon: BarChart3 },
   { to: "/careers", label: "Career Explorer", icon: Compass },
   { to: "/skills", label: "Skill Intelligence", icon: Network },
-  { to: "/gap", label: "Skill Gap Analysis", icon: Target },
-  { to: "/roadmap", label: "Personalized Roadmap", icon: Map },
+  { to: "/gap", label: "Skill Gap Analyzer", icon: Target },
+  { to: "/roadmap", label: "My Roadmap", icon: Map },
 ] as const;
 
 function Logo() {

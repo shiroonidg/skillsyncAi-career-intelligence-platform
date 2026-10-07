@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { Briefcase, FlaskConical, Layers, Lightbulb, Users } from "lucide-react";
+import { ArrowRight, Briefcase, FlaskConical, Info, Layers, Lightbulb, MapPin, TrendingUp, Users } from "lucide-react";
 import { q } from "@/lib/skillsync/queries";
 import { getRoleDemand } from "@/lib/skillsync/api";
 import { salaryByExperience } from "@/lib/skillsync/analysis";
@@ -37,31 +37,32 @@ function Dashboard() {
   const demandReady = roles.data && demand.every((d) => d.isSuccess);
   const salary = jobs.data ? salaryByExperience(jobs.data) : [];
 
-  const insights: string[] = [];
-  if (top.data?.length) insights.push(`"${top.data[0].name}" is the most frequent skill, appearing in ${fmt(top.data[0].market_frequency)} postings; ${top.data.slice(1, 4).map((s) => s.name).join(", ")} follow.`);
-  if (demandReady && demandData[0]) insights.push(`Among tracked roles, ${demandData[0].name} has the most matching postings (${fmt(demandData[0].postings)}), followed by ${demandData[1]?.name} (${fmt(demandData[1]?.postings)}).`);
-  if (locs.data?.length && counts.data) insights.push(`${locs.data[0].location} leads location demand with ${fmt(locs.data[0].posting_count)} postings — about ${Math.round((locs.data[0].posting_count / counts.data.analyticsJobs) * 100)}% of all analytics jobs.`);
+  const insights: { icon: typeof Lightbulb; title: string; text: string }[] = [];
+  if (top.data?.length) insights.push({ icon: Layers, title: "Top skill signal", text: `"${top.data[0].name}" appears in ${fmt(top.data[0].market_frequency)} postings; ${top.data.slice(1, 4).map((s) => s.name).join(", ")} follow.` });
+  if (demandReady && demandData[0]) insights.push({ icon: Users, title: "Hiring concentration", text: `${demandData[0].name} has the most matching postings (${fmt(demandData[0].postings)}), followed by ${demandData[1]?.name} (${fmt(demandData[1]?.postings)}).` });
+  if (locs.data?.length && counts.data) insights.push({ icon: MapPin, title: "Leading hub", text: `${locs.data[0].location} leads with ${fmt(locs.data[0].posting_count)} postings — about ${Math.round((locs.data[0].posting_count / counts.data.analyticsJobs) * 100)}% of analytics jobs.` });
   const salPts = salary.filter((s) => s.median !== null);
-  if (salPts.length >= 2) insights.push(`Median listed salary band rises from ${fmt(salPts[0].median, 1)} (${salPts[0].bucket}) to ${fmt(salPts[salPts.length - 1].median, 1)} (${salPts[salPts.length - 1].bucket}) across postings that disclose salary.`);
-  if (counts.data && counts.data.dataScienceJobs === 0) insights.push("The data-science job dataset currently has no rows, so insights here rely on the analytics job postings only.");
+  if (salPts.length >= 2) insights.push({ icon: TrendingUp, title: "Experience premium", text: `Median salary band rises from ${fmt(salPts[0].median, 1)} (${salPts[0].bucket}) to ${fmt(salPts[salPts.length - 1].median, 1)} (${salPts[salPts.length - 1].bucket}).` });
+  if (counts.data && counts.data.dataScienceJobs === 0) insights.push({ icon: Info, title: "Data coverage", text: "The data-science postings dataset has no rows yet, so insights rely on analytics postings only." });
 
   return (
     <>
-      <PageHeader eyebrow="Market Intelligence" title="What the job market is asking for" desc="Every number below is calculated live from the SkillSync database — no estimates, no placeholders." />
+      <PageHeader eyebrow="Market Intelligence" title="Workforce Intelligence Dashboard" desc="Understand market demand, emerging skills, roles, and career opportunities from real job-market data." />
+      <Journey />
 
       {counts.error ? (
         <ErrorState error={counts.error} />
       ) : (
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <MetricCard label="Analytics jobs" icon={<Briefcase className="h-4 w-4" />} value={counts.data ? fmt(counts.data.analyticsJobs) : "…"} hint="raw_analytics_jobs" />
-          <MetricCard label="Data science jobs" icon={<FlaskConical className="h-4 w-4" />} value={counts.data ? fmt(counts.data.dataScienceJobs) : "…"} hint={counts.data?.dataScienceJobs === 0 ? "No rows loaded yet" : "raw_data_science_jobs"} />
-          <MetricCard label="Skills tracked" icon={<Layers className="h-4 w-4" />} value={counts.data ? fmt(counts.data.skills) : "…"} hint="skill taxonomy" />
-          <MetricCard label="Roles" icon={<Users className="h-4 w-4" />} value={counts.data ? fmt(counts.data.roles) : "…"} hint="target career roles" />
+          <MetricCard label="Job postings" icon={<Briefcase className="h-4 w-4" />} value={counts.data ? fmt(counts.data.analyticsJobs) : "…"} hint="Analytics postings analyzed" />
+          <MetricCard label="Data science postings" icon={<FlaskConical className="h-4 w-4" />} value={counts.data ? fmt(counts.data.dataScienceJobs) : "…"} hint={counts.data?.dataScienceJobs === 0 ? "No rows loaded yet" : "raw_data_science_jobs"} />
+          <MetricCard label="Skills" icon={<Layers className="h-4 w-4" />} value={counts.data ? fmt(counts.data.skills) : "…"} hint="In the skill taxonomy" />
+          <MetricCard label="Roles" icon={<Users className="h-4 w-4" />} value={counts.data ? fmt(counts.data.roles) : "…"} hint="Target career roles" />
         </div>
       )}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <ChartCard title="Top market skills" subtitle="Skills by number of postings mentioning them" source="skills.market_frequency">
+        <ChartCard title="Most In-Demand Skills" subtitle="Which capabilities appear most frequently across the market." source="skills.market_frequency">
           {top.isLoading ? <LoadingState /> : top.error ? <ErrorState error={top.error} /> : (
             <ResponsiveContainer width="100%" height={340}>
               <BarChart data={top.data} layout="vertical" margin={{ left: 20 }}>
@@ -75,7 +76,7 @@ function Dashboard() {
           )}
         </ChartCard>
 
-        <ChartCard title="Role demand" subtitle="Analytics postings whose title matches each role" source="raw_analytics_jobs × roles.search_patterns">
+        <ChartCard title="Role Demand" subtitle="Where hiring demand is concentrated across analyzed roles." source="raw_analytics_jobs × roles.search_patterns">
           {!demandReady ? <LoadingState /> : (
             <ResponsiveContainer width="100%" height={340}>
               <BarChart data={demandData} layout="vertical" margin={{ left: 20 }}>
@@ -89,8 +90,8 @@ function Dashboard() {
           )}
         </ChartCard>
 
-        <ChartCard title="Salary by experience" subtitle="Median listed salary-band midpoint (source units) by minimum experience" source={jobs.data ? `${fmt(salary.reduce((s, x) => s + x.postings, 0))} postings with disclosed salary` : "raw_analytics_jobs"}>
-          {jobs.isLoading ? <LoadingState label="Reading 13k postings…" /> : jobs.error ? <ErrorState error={jobs.error} /> : salPts.length === 0 ? <EmptyState title="No salary data disclosed" /> : (
+        <ChartCard title="Salary vs. Experience" subtitle="Median listed salary-band midpoint (source units) by minimum years required." source={jobs.data ? `${fmt(salary.reduce((s, x) => s + x.postings, 0))} postings with disclosed salary` : "raw_analytics_jobs"}>
+          {jobs.isLoading ? <LoadingState rows={7} /> : jobs.error ? <ErrorState error={jobs.error} /> : salPts.length === 0 ? <EmptyState title="No salary data disclosed" /> : (
             <ResponsiveContainer width="100%" height={280}>
               <LineChart data={salary}>
                 <CartesianGrid stroke="var(--border)" vertical={false} />
@@ -103,7 +104,7 @@ function Dashboard() {
           )}
         </ChartCard>
 
-        <ChartCard title="Location demand" subtitle="Postings per city (multi-city postings count for each)" source="v_location_market">
+        <ChartCard title="Geographic Demand" subtitle="Job postings per city. Multi-city postings count toward each city." source="v_location_market">
           {locs.isLoading ? <LoadingState /> : locs.error ? <ErrorState error={locs.error} /> : (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={locs.data}>
@@ -122,19 +123,23 @@ function Dashboard() {
         <Panel className="lg:col-span-2">
           <div className="mb-3 flex items-center gap-2">
             <Lightbulb className="h-4 w-4 text-primary" />
-            <h3 className="font-semibold">What the market is telling us</h3>
+            <h3 className="font-semibold">Market Insights</h3>
+            <span className="text-sm text-muted-foreground">· What the market is telling us</span>
           </div>
           {insights.length ? (
-            <ul className="space-y-3">
-              {insights.map((t) => (
-                <li key={t} className="flex gap-3 text-sm text-muted-foreground">
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                  {t}
-                </li>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {insights.map(({ icon: Icon, title, text }) => (
+                <div key={title} className="rounded-xl border bg-secondary/40 p-4 transition-colors hover:border-primary/30">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary"><Icon className="h-4 w-4" /></span>
+                    <span className="text-sm font-semibold">{title}</span>
+                  </div>
+                  <p className="mt-2 text-sm text-muted-foreground">{text}</p>
+                </div>
               ))}
-            </ul>
+            </div>
           ) : (
-            <LoadingState label="Deriving insights from data…" />
+            <LoadingState rows={4} />
           )}
         </Panel>
         <Panel>
@@ -154,5 +159,31 @@ function Dashboard() {
         </Panel>
       </div>
     </>
+  );
+}
+
+const STEPS = [
+  { to: "/", label: "Market Demand" },
+  { to: "/skills", label: "Skill Intelligence" },
+  { to: "/careers", label: "Career Requirements" },
+  { to: "/gap", label: "Personal Skill Gap" },
+  { to: "/roadmap", label: "Prioritized Roadmap" },
+] as const;
+
+function Journey() {
+  return (
+    <nav aria-label="Product journey" className="mb-8 flex flex-wrap items-center gap-2">
+      {STEPS.map((s, i) => (
+        <div key={s.to} className="flex items-center gap-2">
+          <Link to={s.to} className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${i === 0 ? "border-primary/40 bg-primary/10 text-primary" : "text-muted-foreground hover:border-primary/40 hover:text-foreground"}`}>
+            <span className="mr-1.5 tabular-nums opacity-60">{i + 1}</span>{s.label}
+          </Link>
+          {i < STEPS.length - 1 && <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/50" />}
+        </div>
+      ))}
+      <Link to="/careers" className="ml-auto inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+        Explore Careers <ArrowRight className="h-4 w-4" />
+      </Link>
+    </nav>
   );
 }

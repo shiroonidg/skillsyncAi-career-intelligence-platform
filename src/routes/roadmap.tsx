@@ -48,8 +48,8 @@ function RoadmapPage() {
   if (!role || !result) {
     return (
       <>
-        <PageHeader eyebrow="My Roadmap" title="Your path to readiness" />
-        <EmptyState title="No target role selected" desc="Pick a role and add your skills in the Skill Gap Analyzer to build a roadmap from real requirements." action={<Button asChild><Link to="/gap">Open Skill Gap Analyzer</Link></Button>} />
+        <PageHeader eyebrow="Personalized Roadmap" title="My Learning Roadmap" desc="A prioritized path from your current capabilities to your target role." />
+        <EmptyState title="No target role selected" desc="Pick a role and add your skills in the Skill Gap Analyzer to build a roadmap from real requirements." action={<Button asChild className="bg-gradient-primary"><Link to="/gap">Start Skill Gap Analysis</Link></Button>} />
       </>
     );
   }
@@ -72,24 +72,24 @@ function RoadmapPage() {
 
   return (
     <>
-      <PageHeader eyebrow="My Roadmap" title={`Roadmap to ${role.name}`} desc="Ordered by prerequisite relationships, role importance and posting evidence. Every reason below is traceable to the database." actions={<Button variant="outline" asChild><Link to="/gap">Edit profile</Link></Button>} />
+      <PageHeader eyebrow="Personalized Roadmap" title="My Learning Roadmap" desc={`A prioritized path from your current capabilities to ${role.name}, ordered by skill dependencies rather than a plain list of courses.`} actions={<Button variant="outline" asChild><Link to="/gap">Edit profile</Link></Button>} />
       <div className="mx-auto max-w-3xl">
         <Panel className="mb-2">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Current skills</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Current Skills</h2>
           <p className="mb-3 text-sm text-muted-foreground">{strong.length} of the role's {result.items.length} required skills are in your profile ({profile.skills.length} total listed).</p>
           <div className="flex flex-wrap gap-1.5">{strong.length ? strong.map((s) => <SkillBadge key={s.skill.id} name={s.skill.name} tone="strong" />) : <span className="text-sm text-muted-foreground">None of the required skills yet — that's a starting point, not a verdict.</span>}</div>
         </Panel>
         <Arrow />
-        <Stage title="Foundation skills" desc="Prerequisites for other gaps, or core skills the role ranks highly." items={foundation} role={role.name} unlockMap={unlockMap} offset={0} />
+        <Stage title="Foundation" desc="Prerequisites for other gaps, or core skills the role ranks highly." items={foundation} role={role.name} unlockMap={unlockMap} offset={0} />
         <Arrow />
-        <Stage title="High-priority gaps" desc="Top-ranked role requirements you don't have yet." items={high} role={role.name} unlockMap={unlockMap} offset={foundation.length} />
+        <Stage title="High-Priority Gaps" desc="Top-ranked role requirements you don't have yet." items={high} role={role.name} unlockMap={unlockMap} offset={foundation.length} />
         <Arrow />
-        <Stage title="Advanced skills" desc="Mid-ranked requirements to round out your profile." items={advanced} role={role.name} unlockMap={unlockMap} offset={foundation.length + high.length} />
+        <Stage title="Advanced Skills" desc="Mid-ranked requirements to round out your profile." items={advanced} role={role.name} unlockMap={unlockMap} offset={foundation.length + high.length} />
         <Arrow />
         <Panel className="flex flex-col items-center gap-6 border-primary/30 md:flex-row">
           <ReadinessScore value={projected} size={130} />
           <div>
-            <h2 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary"><Flag className="h-4 w-4" /> Project / role readiness</h2>
+            <h2 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary"><Flag className="h-4 w-4" /> Role Readiness</h2>
             <p className="mt-2 text-sm text-muted-foreground">Completing these {covered} steps would raise your weighted coverage of {role.name} requirements from {result.readiness}% to {projected}%. Build a project that uses your new skills together to show evidence of them.</p>
           </div>
         </Panel>

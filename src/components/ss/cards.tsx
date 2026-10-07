@@ -34,10 +34,10 @@ export function RoleCard({ role, reqs }: { role: Role; reqs: Requirement[] }) {
           {top.length ? top.map((r) => <SkillBadge key={r.skill_id} name={r.skill.name} />) : <span className="text-xs text-muted-foreground">No skill requirements recorded</span>}
         </div>
         <div className="mt-5 flex gap-2 border-t pt-4">
-          <Link to="/careers/$slug" params={{ slug: role.slug }} className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+          <Link to="/careers/$slug" params={{ slug: role.slug }} className="inline-flex flex-1 items-center justify-center gap-1 whitespace-nowrap rounded-lg bg-primary px-2 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
             Explore Role <ArrowUpRight className="h-4 w-4" />
           </Link>
-          <button onClick={() => { setTargetRole(role.id); navigate({ to: "/gap" }); }} className="inline-flex flex-1 items-center justify-center rounded-lg border px-3 py-2 text-sm font-medium transition-colors hover:border-primary/50 hover:bg-accent">
+          <button onClick={() => { setTargetRole(role.id); navigate({ to: "/gap" }); }} className="inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-lg border px-2 py-2 text-sm font-medium transition-colors hover:border-primary/50 hover:bg-accent">
             Analyze My Gap
           </button>
         </div>

@@ -55,7 +55,7 @@ function Dashboard() {
       ) : (
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <MetricCard label="Job postings" icon={<Briefcase className="h-4 w-4" />} value={counts.data ? fmt(counts.data.analyticsJobs) : "…"} hint="Analytics postings analyzed" />
-          <MetricCard label="Data science postings" icon={<FlaskConical className="h-4 w-4" />} value={counts.data ? fmt(counts.data.dataScienceJobs) : "…"} hint={counts.data?.dataScienceJobs === 0 ? "No rows loaded yet" : "raw_data_science_jobs"} />
+          <MetricCard label="Data science postings" icon={<FlaskConical className="h-4 w-4" />} value={counts.data ? fmt(counts.data.dataScienceJobs) : "…"} hint={counts.data?.dataScienceJobs === 0 ? "Dataset not yet loaded" : "Data science dataset"} />
           <MetricCard label="Skills" icon={<Layers className="h-4 w-4" />} value={counts.data ? fmt(counts.data.skills) : "…"} hint="In the skill taxonomy" />
           <MetricCard label="Roles" icon={<Users className="h-4 w-4" />} value={counts.data ? fmt(counts.data.roles) : "…"} hint="Target career roles" />
         </div>

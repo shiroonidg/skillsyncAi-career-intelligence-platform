@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GapRouteImport } from './routes/gap'
+import { Route as RoadmapRouteImport } from './routes/roadmap'
 import { Route as SkillsRouteImport } from './routes/skills'
 import { Route as CareersIndexRouteImport } from './routes/careers.index'
 import { Route as CareersSlugRouteImport } from './routes/careers.$slug'
@@ -17,6 +19,16 @@ import { Route as CareersSlugRouteImport } from './routes/careers.$slug'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GapRoute = GapRouteImport.update({
+  id: '/gap',
+  path: '/gap',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RoadmapRoute = RoadmapRouteImport.update({
+  id: '/roadmap',
+  path: '/roadmap',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SkillsRoute = SkillsRouteImport.update({
@@ -37,12 +49,16 @@ const CareersSlugRoute = CareersSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/gap': typeof GapRoute
+  '/roadmap': typeof RoadmapRoute
   '/skills': typeof SkillsRoute
   '/careers/$slug': typeof CareersSlugRoute
   '/careers/': typeof CareersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/gap': typeof GapRoute
+  '/roadmap': typeof RoadmapRoute
   '/skills': typeof SkillsRoute
   '/careers/$slug': typeof CareersSlugRoute
   '/careers': typeof CareersIndexRoute
@@ -50,20 +66,32 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/gap': typeof GapRoute
+  '/roadmap': typeof RoadmapRoute
   '/skills': typeof SkillsRoute
   '/careers/$slug': typeof CareersSlugRoute
   '/careers/': typeof CareersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/skills' | '/careers/$slug' | '/careers/'
+  fullPaths:
+    '/' | '/gap' | '/roadmap' | '/skills' | '/careers/$slug' | '/careers/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/skills' | '/careers/$slug' | '/careers'
-  id: '__root__' | '/' | '/skills' | '/careers/$slug' | '/careers/'
+  to: '/' | '/gap' | '/roadmap' | '/skills' | '/careers/$slug' | '/careers'
+  id:
+    | '__root__'
+    | '/'
+    | '/gap'
+    | '/roadmap'
+    | '/skills'
+    | '/careers/$slug'
+    | '/careers/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  GapRoute: typeof GapRoute
+  RoadmapRoute: typeof RoadmapRoute
   SkillsRoute: typeof SkillsRoute
   CareersSlugRoute: typeof CareersSlugRoute
   CareersIndexRoute: typeof CareersIndexRoute
@@ -76,6 +104,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gap': {
+      id: '/gap'
+      path: '/gap'
+      fullPath: '/gap'
+      preLoaderRoute: typeof GapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/roadmap': {
+      id: '/roadmap'
+      path: '/roadmap'
+      fullPath: '/roadmap'
+      preLoaderRoute: typeof RoadmapRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/skills': {
@@ -104,6 +146,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  GapRoute: GapRoute,
+  RoadmapRoute: RoadmapRoute,
   SkillsRoute: SkillsRoute,
   CareersSlugRoute: CareersSlugRoute,
   CareersIndexRoute: CareersIndexRoute,

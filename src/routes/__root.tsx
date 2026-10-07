@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 
 import { AppShell } from "@/components/ss/AppShell";
 import { ProfileProvider } from "@/lib/skillsync/store";
+import { Toaster } from "@/components/ui/sonner";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
@@ -126,6 +127,7 @@ function RootComponent() {
         <AppShell>
           <Outlet />
         </AppShell>
+        <Toaster theme="dark" />
       </ProfileProvider>
     </QueryClientProvider>
   );

@@ -1,14 +1,21 @@
-# Welcome to your Lovable project
+# The Friend Finder
+
+SUPABASE_URL: https://supabase.com/dashboard/project/vpbdrmyuglmquaohizdm
+SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwYmRybXl1Z2xtcXVhb2hpemRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzNjg4MDAsImV4cCI6MjEwNjk0NDgwMH0.5RdDlXO08ngAe0jzYOtW1Hb-Dcq133hnVoElTUxGQbQ
+
+if this one is wrong then: sb_publishable_19cnZoT2TJQppxs50TgtbQ_h9sMvFTt
 
 This project was built with [Lovable](https://lovable.dev).
 
+**Live app**: https://stardust-storyteller-hub.lovable.app
+
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/4d7cdb79-f110-4cea-8888-3d904fb996c1).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +27,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS

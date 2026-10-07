@@ -169,3 +169,9 @@ export async function getCooccurringSkills(skillId: string, limit = 10) {
     items: top.filter((t) => byId.has(t[0])).map(([id, count]) => ({ skill: byId.get(id)!, count })),
   };
 }
+
+export async function getSkillBySlug(slug: string): Promise<Skill | null> {
+  const { data, error } = await db.from("skills").select(SKILL_COLS).eq("slug", slug).maybeSingle();
+  if (error) throw new Error(error.message);
+  return data as Skill | null;
+}

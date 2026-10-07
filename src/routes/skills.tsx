@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { z } from "zod";
 import { q, useReqs, useRelSkills, useRoles } from "@/lib/skillsync/queries";
-import { getCooccurringSkills, searchSkills, type Skill } from "@/lib/skillsync/api";
+import { getCooccurringSkills, getSkillBySlug, searchSkills, type Skill } from "@/lib/skillsync/api";
 import { EmptyState, ErrorState, EvidenceBadge, LoadingState, PageHeader, Panel, SkillBadge, fmt } from "@/components/ss/primitives";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -33,7 +33,7 @@ function SkillsPage() {
   const selected = useQuery({
     queryKey: ["skillBySlug", selSlug],
     enabled: !!selSlug,
-    queryFn: async () => (await searchSkills({ limit: 1, q: undefined })).length >= 0 ? (await import("@/lib/skillsync/client")).db.from("skills").select("*").eq("slug", selSlug!).maybeSingle().then((r) => r.data as Skill | null) : null,
+    queryFn: () => getSkillBySlug(selSlug!),
   });
   const active = selected.data ?? list.data?.[0];
   const { rels, index } = useRelSkills();

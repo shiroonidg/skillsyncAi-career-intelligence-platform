@@ -16,12 +16,12 @@ const NAV = [
 function Logo() {
   return (
     <Link to="/" className="flex items-center gap-2.5">
-      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-primary text-primary-foreground shadow-lift">
         <Network className="h-5 w-5" />
       </div>
       <div className="leading-tight">
         <div className="font-[family-name:var(--font-display)] font-semibold">SkillSync AI</div>
-        <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Skill intelligence</div>
+        <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Workforce Intelligence</div>
       </div>
     </Link>
   );
@@ -39,8 +39,8 @@ function Nav({ onNavigate }: { onNavigate?: () => void }) {
             to={to}
             onClick={onNavigate}
             className={cn(
-              "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
-              active ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground" : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground",
+              "relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all duration-200",
+              active ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground before:absolute before:inset-y-2 before:-left-4 before:w-1 before:rounded-r-full before:bg-primary" : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground",
             )}
           >
             <Icon className={cn("h-4 w-4", active && "text-primary")} />
@@ -73,6 +73,7 @@ function ProfileBox() {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
+  const path = useRouterState({ select: (s) => s.location.pathname });
   return (
     <div className="min-h-screen">
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col justify-between border-r bg-sidebar/90 p-4 backdrop-blur lg:flex">
@@ -80,7 +81,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           <Logo />
           <Nav />
         </div>
-        <ProfileBox />
+        <div className="space-y-3">
+          <ProfileBox />
+          <div className="px-1 text-[10px] uppercase tracking-widest text-muted-foreground/70">Build for Bharat 2.0 · v1.0</div>
+        </div>
       </aside>
       <header className="sticky top-0 z-30 flex items-center justify-between border-b bg-background/80 px-4 py-3 backdrop-blur lg:hidden">
         <Logo />
@@ -106,7 +110,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       )}
       <main className="lg:pl-64">
-        <div className="mx-auto max-w-7xl px-4 py-8 md:px-8 md:py-10">{children}</div>
+        <div key={path} className="mx-auto max-w-7xl px-4 py-8 animate-in fade-in duration-300 md:px-8 md:py-10">{children}</div>
       </main>
     </div>
   );

@@ -1,4 +1,5 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useProfile } from "@/lib/skillsync/store";
 import { ArrowUpRight, Briefcase, Clock, Wallet } from "lucide-react";
 import type { Requirement, Role } from "@/lib/skillsync/api";
 import { summarizeJobs, type GapItem } from "@/lib/skillsync/analysis";
@@ -9,35 +10,45 @@ import type { ReactNode } from "react";
 
 export function RoleCard({ role, reqs }: { role: Role; reqs: Requirement[] }) {
   const demand = useRoleDemand(role);
+  const { setTargetRole } = useProfile();
+  const navigate = useNavigate();
   const jobs = useRoleJobs(role);
   const s = jobs.data ? summarizeJobs(jobs.data) : null;
   const top = reqs.filter((r) => r.role_id === role.id && r.skill).sort((a, b) => b.importance_weight - a.importance_weight).slice(0, 5);
   return (
-    <Link to="/careers/$slug" params={{ slug: role.slug }} className="group block">
-      <Panel className="h-full transition-all duration-300 group-hover:-translate-y-0.5 group-hover:border-primary/40">
+    <div className="group">
+      <Panel className="flex h-full flex-col transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/40 group-hover:shadow-lift">
         <div className="flex items-start justify-between">
           <div>
             <h3 className="text-lg font-semibold">{role.name}</h3>
             <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{role.description}</p>
           </div>
-          <ArrowUpRight className="h-5 w-5 text-muted-foreground transition-colors group-hover:text-primary" />
+
         </div>
         <div className="mt-4 grid grid-cols-3 gap-2 text-sm">
-          <Stat icon={<Briefcase className="h-3.5 w-3.5" />} label="Postings" value={demand.isLoading ? "…" : fmt(demand.data)} />
+          <Stat icon={<Briefcase className="h-3.5 w-3.5" />} label="Relevant jobs" value={demand.isLoading ? "…" : fmt(demand.data)} />
           <Stat icon={<Wallet className="h-3.5 w-3.5" />} label="Median band" value={jobs.isLoading ? "…" : s?.medianSalary != null ? fmt(s.medianSalary, 1) : "n/a"} />
           <Stat icon={<Clock className="h-3.5 w-3.5" />} label="Typical exp." value={jobs.isLoading ? "…" : s?.medianMinExp != null ? `${fmt(s.medianMinExp)}–${fmt(s.medianMaxExp)} yrs` : "n/a"} />
         </div>
-        <div className="mt-4 flex flex-wrap gap-1.5">
+        <div className="mt-4 flex flex-1 flex-wrap content-start gap-1.5">
           {top.length ? top.map((r) => <SkillBadge key={r.skill_id} name={r.skill.name} />) : <span className="text-xs text-muted-foreground">No skill requirements recorded</span>}
         </div>
+        <div className="mt-5 flex gap-2 border-t pt-4">
+          <Link to="/careers/$slug" params={{ slug: role.slug }} className="inline-flex flex-1 items-center justify-center gap-1 whitespace-nowrap rounded-lg bg-primary px-2 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+            Explore Role <ArrowUpRight className="h-4 w-4" />
+          </Link>
+          <button onClick={() => { setTargetRole(role.id); navigate({ to: "/gap" }); }} className="inline-flex flex-1 items-center justify-center whitespace-nowrap rounded-lg border px-2 py-2 text-sm font-medium transition-colors hover:border-primary/50 hover:bg-accent">
+            Analyze My Gap
+          </button>
+        </div>
       </Panel>
-    </Link>
+    </div>
   );
 }
 
 function Stat({ icon, label, value }: { icon: ReactNode; label: string; value: ReactNode }) {
   return (
-    <div className="rounded-lg bg-secondary/60 p-2">
+    <div className="rounded-lg bg-secondary/60 p-2.5">
       <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
         {icon}
         {label}
@@ -50,7 +61,7 @@ function Stat({ icon, label, value }: { icon: ReactNode; label: string; value: R
 export function SkillGapCard({ item }: { item: GapItem }) {
   const bar = { strong: "bg-success", partial: "bg-warning", missing: "bg-destructive" }[item.match];
   return (
-    <Panel className="relative overflow-hidden p-4">
+    <Panel className="relative overflow-hidden p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lift">
       <div className={cn("absolute inset-y-0 left-0 w-1", bar)} />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
@@ -82,10 +93,10 @@ export function RoadmapStep({ index, item, why, last }: { index: number; item: G
   return (
     <div className="relative flex gap-4">
       <div className="flex flex-col items-center">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary/40 bg-primary/10 text-sm font-semibold text-primary">{index}</div>
-        {!last && <div className="w-px flex-1 bg-border" />}
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-primary text-sm font-semibold text-primary-foreground shadow-lift">{index}</div>
+        {!last && <div className="w-0.5 flex-1 bg-gradient-to-b from-primary/50 to-border" />}
       </div>
-      <Panel className="mb-4 flex-1 p-4">
+      <Panel className="mb-4 flex-1 p-5 transition-all duration-200 hover:border-primary/30">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <span className="font-semibold">{item.skill.name}</span>
           <div className="flex gap-2">

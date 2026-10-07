@@ -29,7 +29,7 @@ function Step({ n, title, children }: { n: number; title: string; children: Reac
   return (
     <Panel>
       <div className="mb-4 flex items-center gap-3">
-        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">{n}</span>
+        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-primary text-sm font-semibold text-primary-foreground">{n}</span>
         <h3 className="font-semibold">{title}</h3>
       </div>
       {children}
@@ -70,10 +70,10 @@ function GapPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Skill Gap Analyzer" title="How ready are you for your target role?" desc="Only skills you add — or that are found word-for-word in your resume text — count as yours. Nothing is assumed." />
+      <PageHeader eyebrow="Skill Gap Analyzer" title="Skill Gap Analyzer" desc="Measure your readiness for a target career and identify the skills that matter most." />
       {error && <ErrorState error={error} />}
       <div className="grid gap-6 lg:grid-cols-2">
-        <Step n={1} title="Select target role">
+        <Step n={1} title="Target Role">
           {roles.isLoading ? <LoadingState /> : (
             <div className="flex flex-wrap gap-2">
               {roles.data?.map((r) => (
@@ -84,7 +84,7 @@ function GapPage() {
             </div>
           )}
         </Step>
-        <Step n={2} title="Add your skills">
+        <Step n={2} title="Your Current Skills">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input value={term} onChange={(e) => setTerm(e.target.value)} placeholder="Type a skill, e.g. Python" className="pl-9" aria-label="Search skills to add" />
@@ -104,7 +104,7 @@ function GapPage() {
               <Button size="sm" variant="outline" onClick={() => fileRef.current?.click()} className="gap-1"><Upload className="h-3.5 w-3.5" /> .txt</Button>
               <input ref={fileRef} type="file" accept=".txt,.md,text/plain" className="hidden" onChange={(e) => onFile(e.target.files?.[0])} />
             </div>
-            <Textarea value={resume} onChange={(e) => setResume(e.target.value)} placeholder="Paste your resume text here…" rows={4} />
+            <Textarea value={resume} onChange={(e) => setResume(e.target.value)} placeholder="Paste your resume text here, and we will match it against 2,500+ known skills" rows={4} />
             <Button size="sm" className="mt-2" disabled={!resume || aliases.isLoading} onClick={extract}>{aliases.isLoading ? "Loading skill dictionary…" : "Extract skills"}</Button>
           </div>
           <div className="mt-4">
@@ -120,8 +120,8 @@ function GapPage() {
       </div>
 
       <div className="my-6 flex justify-center">
-        <Button size="lg" className="gap-2" disabled={!role || loading} onClick={() => profile.setAnalyzed(true)}>
-          <Sparkles className="h-4 w-4" /> {role ? `Analyze for ${role.name}` : "Pick a role to analyze"}
+        <Button size="lg" className="h-12 gap-2 bg-gradient-primary px-8 text-base shadow-lift" disabled={!role || loading} onClick={() => profile.setAnalyzed(true)}>
+          <Sparkles className="h-4 w-4" /> {role ? `Analyze My Readiness for ${role.name}` : "Select a target role to begin"}
         </Button>
       </div>
 
@@ -129,23 +129,24 @@ function GapPage() {
         result.items.length === 0 ? <EmptyState title="This role has no recorded skill requirements" /> : (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <Panel className="flex flex-col items-center gap-6 md:flex-row">
-            <ReadinessScore value={result.readiness} />
+            <ReadinessScore value={result.readiness} size={190} />
             <div className="flex-1">
-              <h2 className="text-2xl font-semibold">{role.name} readiness</h2>
+              <div className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Career Readiness</div>
+              <h2 className="text-2xl font-semibold">{role.name}</h2>
               <p className="mt-1 text-sm text-muted-foreground">Share of the role's importance-weighted requirements you cover ({result.items.length} skills). Partial matches count half.</p>
               <div className="mt-4 grid grid-cols-3 gap-3 text-center">
                 <div className="rounded-xl bg-success/10 p-3"><div className="text-2xl font-semibold text-success">{groups.strong.length}</div><div className="text-xs text-muted-foreground">Strong</div></div>
-                <div className="rounded-xl bg-warning/10 p-3"><div className="text-2xl font-semibold text-warning">{groups.partial.length}</div><div className="text-xs text-muted-foreground">Partial</div></div>
+                <div className="rounded-xl bg-warning/10 p-3"><div className="text-2xl font-semibold text-warning">{groups.partial.length}</div><div className="text-xs text-muted-foreground">Partial / Developing</div></div>
                 <div className="rounded-xl bg-destructive/10 p-3"><div className="text-2xl font-semibold text-destructive">{groups.missing.length}</div><div className="text-xs text-muted-foreground">Missing</div></div>
               </div>
             </div>
-            <Button size="lg" variant="secondary" className="gap-2" onClick={() => navigate({ to: "/roadmap" })}><MapIcon className="h-4 w-4" /> Generate roadmap</Button>
+            <Button size="lg" className="gap-2 bg-gradient-primary shadow-lift" onClick={() => navigate({ to: "/roadmap" })}><MapIcon className="h-4 w-4" /> Build My Roadmap</Button>
           </Panel>
 
           <div className="grid gap-4 md:grid-cols-3">
             {(["strong", "partial", "missing"] as const).map((k) => (
               <Panel key={k}>
-                <h3 className="mb-3 font-semibold capitalize">{k} skills <span className="text-muted-foreground">({groups[k].length})</span></h3>
+                <h3 className="mb-3 font-semibold">{{ strong: "Strong Skills", partial: "Partial / Developing", missing: "Missing Skills" }[k]} <span className="text-muted-foreground">({groups[k].length})</span></h3>
                 <div className="flex max-h-48 flex-wrap gap-1.5 overflow-auto">
                   {groups[k].length ? groups[k].map((i) => <SkillBadge key={i.skill.id} name={i.skill.name} tone={k} />) : <span className="text-sm text-muted-foreground">None</span>}
                 </div>
@@ -154,7 +155,8 @@ function GapPage() {
           </div>
 
           <div>
-            <h2 className="mb-3 text-xl font-semibold">Prioritized gaps</h2>
+            <h2 className="mb-1 text-xl font-semibold">Prioritized Gaps</h2>
+            <p className="mb-4 text-sm text-muted-foreground">Ranked by priority, then by importance to the role. Each one shows the evidence behind it.</p>
             {gaps.length === 0 ? <EmptyState title="No gaps — you cover every requirement" /> : (
               <div className="grid gap-3 md:grid-cols-2">{gaps.slice(0, 20).map((g) => <SkillGapCard key={g.skill.id} item={g} />)}</div>
             )}

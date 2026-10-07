@@ -72,12 +72,12 @@ function RoleDetail() {
         <ArrowLeft className="h-4 w-4" /> All roles
       </Link>
       <PageHeader
-        eyebrow="Role overview"
+        eyebrow="Career Explorer · Role Profile"
         title={role.name}
         desc={role.description ?? undefined}
         actions={
-          <Button onClick={analyze} size="lg" className="gap-2">
-            <Target className="h-4 w-4" /> Analyze my gap for this role
+          <Button onClick={analyze} size="lg" className="gap-2 bg-gradient-primary shadow-lift">
+            <Target className="h-4 w-4" /> Analyze My Gap
           </Button>
         }
       />
@@ -89,7 +89,7 @@ function RoleDetail() {
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-5">
-        <ChartCard className="lg:col-span-3" title="Skill importance" subtitle="Top 12 skills by importance weight for this role" source="role_skill_requirements.importance_weight">
+        <ChartCard className="lg:col-span-3" title="Skill Importance" subtitle="Top 12 required skills, ranked by importance weight for this role." source="role_skill_requirements.importance_weight">
           {mine.length === 0 ? <EmptyState title="No skill requirements recorded for this role" /> : (
             <ResponsiveContainer width="100%" height={380}>
               <BarChart data={mine.slice(0, 12).map((r) => ({ name: r.skill.name, weight: +r.importance_weight.toFixed(2), postings: r.evidence_frequency }))} layout="vertical" margin={{ left: 20 }}>
@@ -104,20 +104,20 @@ function RoleDetail() {
         </ChartCard>
         <div className="space-y-6 lg:col-span-2">
           <Panel>
-            <h3 className="mb-3 font-semibold">All required skills</h3>
+            <h3 className="mb-3 font-semibold">Required Skills</h3>
             <div className="flex max-h-64 flex-wrap gap-1.5 overflow-auto">
               {mine.map((r) => <SkillBadge key={r.skill_id} name={r.skill.name} slug={r.skill.slug} />)}
             </div>
             <EvidenceBadge className="mt-4" label={`evidence source: ${mine[0]?.evidence_source ?? "—"}`} />
           </Panel>
           <Panel>
-            <h3 className="mb-3 font-semibold">Related skills</h3>
+            <h3 className="mb-3 font-semibold">Related Skills</h3>
             {related.size === 0 ? <p className="text-sm text-muted-foreground">No skill-graph relationships point outside this role's requirements.</p> : (
               <div className="flex flex-wrap gap-1.5">{[...related.entries()].map(([id, v]) => <SkillBadge key={id} name={`${v.name} · ${v.via.replace(/_/g, " ")}`} />)}</div>
             )}
           </Panel>
           <Panel>
-            <h3 className="mb-3 font-semibold">Related roles</h3>
+            <h3 className="mb-3 font-semibold">Similar Roles</h3>
             {relatedRoles.length === 0 ? <p className="text-sm text-muted-foreground">No other role shares required skills.</p> : (
               <ul className="space-y-2">
                 {relatedRoles.map(({ r, shared, pct }) => (
@@ -133,6 +133,13 @@ function RoleDetail() {
           </Panel>
         </div>
       </div>
+      <Panel className="mt-6 flex flex-col items-center justify-between gap-4 border-primary/30 md:flex-row">
+        <div>
+          <h3 className="text-lg font-semibold">How close are you to becoming a {role.name}?</h3>
+          <p className="text-sm text-muted-foreground">Compare your skills against these {mine.length} requirements.</p>
+        </div>
+        <Button onClick={analyze} size="lg" className="gap-2 bg-gradient-primary shadow-lift"><Target className="h-4 w-4" /> Analyze My Gap</Button>
+      </Panel>
     </>
   );
 }

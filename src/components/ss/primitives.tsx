@@ -1,15 +1,15 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { AlertTriangle, Database, Inbox, Loader2 } from "lucide-react";
+import { AlertTriangle, Database, SearchX } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { MatchLevel, Priority } from "@/lib/skillsync/analysis";
 
 export function PageHeader({ eyebrow, title, desc, actions }: { eyebrow?: string; title: string; desc?: string; actions?: ReactNode }) {
   return (
-    <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between animate-in fade-in slide-in-from-bottom-2 duration-500">
+    <div className="mb-8 flex flex-col gap-4 border-b pb-8 md:flex-row md:items-end md:justify-between animate-in fade-in slide-in-from-bottom-2 duration-500">
       <div>
         {eyebrow && <div className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary">{eyebrow}</div>}
-        <h1 className="text-3xl font-semibold md:text-4xl">{title}</h1>
+        <h1 className="text-3xl font-semibold tracking-tight md:text-[2.5rem] md:leading-tight">{title}</h1>
         {desc && <p className="mt-2 max-w-2xl text-muted-foreground">{desc}</p>}
       </div>
       {actions}
@@ -18,15 +18,15 @@ export function PageHeader({ eyebrow, title, desc, actions }: { eyebrow?: string
 }
 
 export function Panel({ className, children }: { className?: string; children: ReactNode }) {
-  return <div className={cn("rounded-2xl border bg-card/80 p-5 backdrop-blur", className)}>{children}</div>;
+  return <div className={cn("rounded-2xl border bg-card p-6 shadow-card", className)}>{children}</div>;
 }
 
 export function MetricCard({ label, value, hint, icon }: { label: string; value: ReactNode; hint?: string; icon?: ReactNode }) {
   return (
-    <Panel className="relative overflow-hidden">
-      <div className="flex items-center justify-between text-sm text-muted-foreground">
-        {label}
-        <span className="text-primary">{icon}</span>
+    <Panel className="relative overflow-hidden p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lift">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</span>
+        {icon && <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">{icon}</span>}
       </div>
       <div className="mt-3 font-[family-name:var(--font-display)] text-3xl font-semibold tabular-nums">{value}</div>
       {hint && <div className="mt-1 text-xs text-muted-foreground">{hint}</div>}
@@ -37,9 +37,9 @@ export function MetricCard({ label, value, hint, icon }: { label: string; value:
 export function ChartCard({ title, subtitle, children, source, className }: { title: string; subtitle?: string; children: ReactNode; source?: string; className?: string }) {
   return (
     <Panel className={className}>
-      <div className="mb-4">
+      <div className="mb-5">
         <h3 className="text-base font-semibold">{title}</h3>
-        {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
+        {subtitle && <p className="mt-0.5 text-sm text-muted-foreground">{subtitle}</p>}
       </div>
       {children}
       {source && <EvidenceBadge className="mt-4" label={source} />}
@@ -57,13 +57,13 @@ export function EvidenceBadge({ label, className }: { label: string; className?:
 
 export function SkillBadge({ name, slug, tone = "default", onRemove }: { name: string; slug?: string; tone?: "default" | MatchLevel; onRemove?: () => void }) {
   const cls = {
-    default: "border-border bg-secondary text-secondary-foreground",
+    default: "border-border bg-secondary text-secondary-foreground hover:border-primary/40",
     strong: "border-success/30 bg-success/10 text-success",
     partial: "border-warning/30 bg-warning/10 text-warning",
     missing: "border-destructive/30 bg-destructive/10 text-destructive",
   }[tone];
   const inner = (
-    <span className={cn("inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium", cls)}>
+    <span className={cn("inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors", cls)}>
       {name}
       {onRemove && (
         <button aria-label={`Remove ${name}`} onClick={onRemove} className="ml-1 opacity-70 hover:opacity-100">
@@ -82,14 +82,14 @@ export function SkillBadge({ name, slug, tone = "default", onRemove }: { name: s
 }
 
 export function PriorityPill({ p }: { p: Priority }) {
-  const cls = { High: "bg-destructive/15 text-destructive", Medium: "bg-warning/15 text-warning", Low: "bg-muted text-muted-foreground" }[p];
-  return <span className={cn("rounded-md px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide", cls)}>{p}</span>;
+  const cls = { High: "border-destructive/30 bg-destructive/10 text-destructive", Medium: "border-warning/30 bg-warning/10 text-warning", Low: "border-border bg-muted text-muted-foreground" }[p];
+  return <span className={cn("whitespace-nowrap rounded-md border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider", cls)}>{p} priority</span>;
 }
 
 export function EmptyState({ title, desc, action }: { title: string; desc?: string; action?: ReactNode }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed p-10 text-center">
-      <Inbox className="mb-3 h-8 w-8 text-muted-foreground" />
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed bg-card/40 px-6 py-12 text-center">
+      <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-secondary"><SearchX className="h-5 w-5 text-muted-foreground" /></div>
       <div className="font-medium">{title}</div>
       {desc && <p className="mt-1 max-w-md text-sm text-muted-foreground">{desc}</p>}
       {action && <div className="mt-4">{action}</div>}
@@ -97,11 +97,26 @@ export function EmptyState({ title, desc, action }: { title: string; desc?: stri
   );
 }
 
-export function LoadingState({ label = "Loading from database…", className }: { label?: string; className?: string }) {
+export function LoadingState({ label = "Fetching market data", className, rows = 5 }: { label?: string; className?: string; rows?: number }) {
   return (
-    <div className={cn("flex items-center justify-center gap-2 p-8 text-sm text-muted-foreground", className)}>
-      <Loader2 className="h-4 w-4 animate-spin text-primary" /> {label}
+    <div role="status" aria-label={label} className={cn("space-y-3 py-2", className)}>
+      {Array.from({ length: rows }, (_, i) => (
+        <div key={i} className="skeleton h-5" style={{ width: `${92 - ((i * 17) % 45)}%` }} />
+      ))}
+      <span className="sr-only">{label}</span>
     </div>
+  );
+}
+
+export function SkeletonCard({ className }: { className?: string }) {
+  return (
+    <Panel className={className}>
+      <div className="skeleton mb-3 h-5 w-1/2" />
+      <div className="skeleton mb-5 h-4 w-3/4" />
+      <div className="grid grid-cols-3 gap-2">
+        <div className="skeleton h-12" /><div className="skeleton h-12" /><div className="skeleton h-12" />
+      </div>
+    </Panel>
   );
 }
 
@@ -110,7 +125,7 @@ export function ErrorState({ error }: { error: unknown }) {
     <div className="flex items-start gap-3 rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm">
       <AlertTriangle className="mt-0.5 h-4 w-4 text-destructive" />
       <div>
-        <div className="font-medium text-destructive">Couldn't load this data</div>
+        <div className="font-medium text-destructive">Market data is currently unavailable for this view</div>
         <div className="text-muted-foreground">{error instanceof Error ? error.message : String(error)}</div>
       </div>
     </div>
@@ -129,7 +144,7 @@ export function ReadinessScore({ value, size = 160 }: { value: number; size?: nu
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="font-[family-name:var(--font-display)] text-4xl font-semibold">{value}%</span>
-        <span className="text-xs text-muted-foreground">readiness</span>
+        <span className="text-xs text-muted-foreground">Career readiness</span>
       </div>
     </div>
   );
